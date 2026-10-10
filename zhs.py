@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-智慧树刷课 · 统一入口
+智慧树刷课 · 交互式入口
 ================================================================
-唯一需要直接运行的脚本。其余内部实现都在 internal/ 里。
+直接运行，跟着提示走：
 
-  python zhs.py              交互式（推荐）
-  python zhs.py list         列课程
-  python zhs.py doctor       环境自检
-  python zhs.py login        登录 / 续期
+    python zhs.py
 
-详见 README.md
+会自动：抓课程 → 你选序号 → 按课程类型给出可做操作 → 执行。
+会话缺失或过期时会先引导扫码登录。
 """
-import argparse
 import json
 import os as _os
 import subprocess
@@ -218,6 +215,33 @@ MENU = {
 }
 
 
+def session_alive():
+    """试抓一次课程列表，判断会话是否可用"""
+    r = subprocess.run([PY, str(INT / "_课程总览.py")], cwd=str(ROOT),
+                       env=CHILD_ENV, capture_output=True, text=True,
+                       encoding="utf-8", errors="replace")
+    return (r.returncode == 0 and (CAP / "my_courses.json").exists())
+
+
+def ensure_session():
+    """没有可用会话就先登录"""
+    if session_alive():
+        return True
+    log("  ⚠️ 没有可用会话（或已过期）")
+    log("")
+    ans = input("  现在扫码登录？(Y/n): ").strip().lower()
+    if ans in ("n", "no"):
+        return False
+    run("_共享课_登录.py")
+    log("")
+    if not session_alive():
+        log("  登录后仍拿不到课程列表，先看自检：")
+        log("")
+        act_doctor()
+        return False
+    return True
+
+
 def interactive(courses):
     items = flat(courses)
     if not items:
@@ -282,52 +306,18 @@ def act_doctor():
 
 
 def main():
-    ap = argparse.ArgumentParser(
-        prog="zhs", description="智慧树刷课（不带参数 = 交互式）")
-    ap.add_argument("action", nargs="?", default=None,
-                    choices=["list", "study", "exam", "video", "hw", "checkin",
-                             "all", "login", "doctor"])
-    ap.add_argument("course", nargs="?", help="课程序号或名字片段")
-    ap.add_argument("--rounds", type=int, default=6, help="考试轮数，默认 6")
-    ap.add_argument("--nodes", type=int, help="只处理前 N 个知识点")
-    ap.add_argument("--limit", type=int, help="视频只刷 N 个")
-    ap.add_argument("--apply", type=int, help="作业：申请重做第 N 份")
-    ap.add_argument("--do", type=int, help="作业：提交第 N 份")
-    ap.add_argument("--a", dest="answer", action="append", default=[],
-                    help="作业答案（多选写 id1#@#id2）")
-    ap.add_argument("--dry", action="store_true", help="作业：只列题不提交")
-    ap.add_argument("--list", action="store_true", help="只列出不提交")
-    a = ap.parse_args()
-    A = {"rounds": a.rounds, "nodes": a.nodes, "limit": a.limit,
-         "apply": a.apply, "do": a.do, "answer": a.answer,
-         "dry": a.dry, "list": a.list}
-
-    if a.action == "doctor":
-        return act_doctor()
-    if a.action == "login":
-        return run("_共享课_登录.py")
-    if a.action == "list":
-        show(load_courses(refresh=True))
-        return 0
-
-    courses = load_courses(refresh=False)
-    if a.action is None:
-        return interactive(load_courses(refresh=True))
-    if a.course is None:
-        return interactive(courses)
-
-    kind, r = pick(courses, a.course)
-    log("→ %s  [%s]" % (r.get("name"), "新形态课" if kind == "ai" else "共享课"))
     log("")
-    if a.action == "checkin":
-        return do_checkin(r, A)
-    table = ({"study": do_study, "exam": do_exam, "all": do_all_ai} if kind == "ai"
-             else {"video": do_video, "hw": do_hw, "all": do_all_share})
-    fn = table.get(a.action)
-    if not fn:
-        log("⚠️ 这门课不支持该操作")
-        return 2
-    return fn(r, A)
+    log("=" * 70)
+    log("  智慧树刷课")
+    log("=" * 70)
+    log("")
+
+    if not ensure_session():
+        log("  ❌ 没有可用会话，无法继续")
+        return 1
+
+    courses = load_courses(refresh=True)
+    return interactive(courses)
 
 
 if __name__ == "__main__":
