@@ -1,0 +1,30 @@
+# 运行数据 —— 绝对不要提交
+capture/*
+!capture/capture_addon.py
+!capture/.gitkeep
+
+# 会话 / 题库 / 日志
+session.json
+qr_login.png
+my_courses.json
+exam_answers.json
+homework_answers.json
+answer_letter_map.json
+daily_log.json
+progress_py.json
+proxy-flow*.jsonl
+proxy-hosts*.log
+chrome-profile/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+.DS_Store

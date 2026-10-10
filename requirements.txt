@@ -1,0 +1,8 @@
+# 智慧树刷课工具包 · 依赖
+# 安装:  pip install -r requirements.txt
+
+pycryptodome>=3.19      # AES-128-CBC 加解密（两套系统都用）
+curl_cffi>=0.6          # 带浏览器 TLS 指纹的 HTTP 客户端，必需
+
+# 可选：仅抓包工具需要
+# mitmproxy>=10.0
