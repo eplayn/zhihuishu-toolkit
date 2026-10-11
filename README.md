@@ -38,7 +38,7 @@ python zhs.py
     [3] 工程力学B                学习 100  掌握 99    王老师
     [4] 复变函数B-26秋冬         学习 100  掌握 0     赵老师
 
-选择课程序号（q 退出）: 1
+选择课程序号（0=环境自检  q=退出）: 1
   已选：马克思主义基本原理  [共享课]
 
   [1] 刷视频
@@ -60,6 +60,19 @@ python zhs.py
 **课程列表是实时抓的** —— 换账号、加退课都会正确反映。
 
 > 共享课登录状态保持 **24 小时**，过期后下次运行会自动引导你重新扫码。
+
+**随时可以按 `0` 做环境自检** —— 检查依赖是否装好、会话是否有效：
+
+```
+  环境自检
+  ✅ pycryptodome 已安装
+  ✅ curl_cffi    已安装
+  ✅ session.json  含 16 个域
+       ✅ onlineservice-api.zhihuishu.com
+       ✅ studentexam-api.zhihuishu.com
+       ✅ studyservice-api.zhihuishu.com
+  结论：可以开刷
+```
 
 ---
 

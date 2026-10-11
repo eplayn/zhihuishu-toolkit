@@ -249,15 +249,21 @@ def interactive(courses):
     show(courses)
     while True:
         try:
-            s = input("选择课程序号（q 退出）: ").strip()
+            s = input("选择课程序号（0=环境自检  q=退出）: ").strip()
         except (EOFError, KeyboardInterrupt):
             print(); return 0
         if s.lower() in ("q", "quit", "exit"):
             return 0
+        if s == "0":
+            log("")
+            act_doctor()
+            log("")
+            show(courses)
+            continue
         if s.isdigit() and 1 <= int(s) <= len(items):
             kind, r = items[int(s) - 1]
             break
-        log("  请输入 1-%d 之间的序号" % len(items))
+        log("  请输入 0-%d（0 为环境自检）" % len(items))
 
     log("")
     log("  已选：%s  [%s]" % (r.get("name"), "新形态课" if kind == "ai" else "共享课"))
