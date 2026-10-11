@@ -32,7 +32,7 @@ from pathlib import Path
 from curl_cffi import requests as cr
 
 SESSION_FILE = CAP / "session.json"
-QR_PNG = Path(r"F:\Project\pj03\capture\qr_login.png")
+QR_PNG = CAP / "qr_login.png"
 API_HOST = "studyservice-api.zhihuishu.com"
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/153.0.0.0 Safari/537.36")
@@ -161,7 +161,10 @@ def main():
     log("二维码已保存: " + str(QR_PNG))
     log("qrToken: " + qr_token)
     try:
-        os.startfile(str(QR_PNG))
+        try:
+            os.startfile(str(QR_PNG))
+        except Exception:
+            log("  （无法自动打开图片，请手动打开上面的路径）")
         log("已自动打开图片 —— 请用「知到」App 扫码")
     except Exception:
         log("请手动打开 " + str(QR_PNG) + " 扫码")

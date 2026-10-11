@@ -36,7 +36,7 @@ from curl_cffi import requests as cr
 
 # ---------------- 常量 ----------------
 SESSION_FILE = CAP / "session.json"
-STATE_FILE = Path(r"F:\Project\pj03\capture\progress_py.json")
+STATE_FILE = CAP / "progress_py.json"
 API = "studyservice-api.zhihuishu.com"
 
 IV = b"1g3qqdh4jvbskb9x"
