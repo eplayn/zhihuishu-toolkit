@@ -249,21 +249,15 @@ def interactive(courses):
     show(courses)
     while True:
         try:
-            s = input("选择课程序号（0=环境自检  q=退出）: ").strip()
+            s = input("选择课程序号（q 退出）: ").strip()
         except (EOFError, KeyboardInterrupt):
             print(); return 0
         if s.lower() in ("q", "quit", "exit"):
             return 0
-        if s == "0":
-            log("")
-            act_doctor()
-            log("")
-            show(courses)
-            continue
         if s.isdigit() and 1 <= int(s) <= len(items):
             kind, r = items[int(s) - 1]
             break
-        log("  请输入 0-%d（0 为环境自检）" % len(items))
+        log("  请输入 1-%d 之间的序号" % len(items))
 
     log("")
     log("  已选：%s  [%s]" % (r.get("name"), "新形态课" if kind == "ai" else "共享课"))
@@ -304,7 +298,7 @@ def act_doctor():
                   "studyservice-api.zhihuishu.com"):
             log("       %s %s" % ("✅" if d in have else "⭕", d))
     else:
-        log("  ❌ session.json 不存在 →  python zhs.py login")
+        log("  ❌ session.json 不存在 →  运行 python zhs.py 会引导扫码登录")
         ok = False
     log("")
     log("  结论：%s" % ("可以开刷" if ok else "先补齐上面的问题"))
@@ -312,6 +306,15 @@ def act_doctor():
 
 
 def main():
+    # 命令行只保留两个入口：自检与用法
+    if len(sys.argv) > 1:
+        a1 = sys.argv[1]
+        if a1 in ("doctor", "check", "--doctor"):
+            return act_doctor()
+        if a1 in ("-h", "--help", "help"):
+            log(__doc__.strip())
+            return 0
+
     log("")
     log("=" * 70)
     log("  智慧树刷课")
